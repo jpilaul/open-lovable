@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import type { ConversationState } from '@/types/conversation';
+import { supabase } from '@/lib/supabaseClient';
 
 declare global {
   var conversationState: ConversationState | null;
@@ -14,6 +15,22 @@ export async function GET() {
         state: null,
         message: 'No active conversation'
       });
+      const { data, error } = await supabase
+        .from('conversation_states')
+        .select('state')
+        .order('id', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (error || !data) {
+        return NextResponse.json({
+          success: true,
+          state: null,
+          message: 'No active conversation'
+        });
+      }
+
+      global.conversationState = data.state as ConversationState;
     }
     
     return NextResponse.json({
@@ -47,6 +64,13 @@ export async function POST(request: NextRequest) {
             userPreferences: {}
           }
         };
+
+        await supabase
+          .from('conversation_states')
+          .upsert({
+            id: global.conversationState.conversationId,
+            state: global.conversationState
+          });
         
         console.log('[conversation-state] Reset conversation state');
         
@@ -71,6 +95,16 @@ export async function POST(request: NextRequest) {
         global.conversationState.context.projectEvolution.majorChanges = 
           global.conversationState.context.projectEvolution.majorChanges.slice(-2);
         
+
+        global.conversationState.lastUpdated = Date.now();
+
+        await supabase
+          .from('conversation_states')
+          .upsert({
+            id: global.conversationState.conversationId,
+            state: global.conversationState
+          });
+
         console.log('[conversation-state] Cleared old conversation data');
         
         return NextResponse.json({
@@ -101,6 +135,13 @@ export async function POST(request: NextRequest) {
           
           global.conversationState.lastUpdated = Date.now();
         }
+
+        await supabase
+          .from('conversation_states')
+          .upsert({
+            id: global.conversationState.conversationId,
+            state: global.conversationState
+          });
         
         return NextResponse.json({
           success: true,
@@ -126,6 +167,14 @@ export async function POST(request: NextRequest) {
 // DELETE: Clear conversation state
 export async function DELETE() {
   try {
+
+    if (global.conversationState) {
+      await supabase
+        .from('conversation_states')
+        .delete()
+        .eq('id', global.conversationState.conversationId);
+    }
+    
     global.conversationState = null;
     
     console.log('[conversation-state] Cleared conversation state');
