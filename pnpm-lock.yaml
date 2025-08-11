@@ -29,6 +29,9 @@ importers:
       '@radix-ui/react-switch':
         specifier: ^1.2.5
         version: 1.2.5(@types/react-dom@19.1.7(@types/react@19.1.9))(@types/react@19.1.9)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@supabase/supabase-js':
+        specifier: ^2.54.0
+        version: 2.54.0
       '@types/react-syntax-highlighter':
         specifier: ^15.5.13
         version: 15.5.13
