@@ -12,7 +12,7 @@ Chat with AI to build React apps instantly.
 
 1. **Clone & Install**
 ```bash
-git clone https://github.com/mendableai/open-lovable.git
+git clone https://github.com/jpilaul/open-lovable.git
 cd open-lovable
 npm install
 ```
@@ -27,6 +27,8 @@ FIRECRAWL_API_KEY=your_firecrawl_api_key  # Get from https://firecrawl.dev (Web 
 ANTHROPIC_API_KEY=your_anthropic_api_key  # Get from https://console.anthropic.com
 OPENAI_API_KEY=your_openai_api_key  # Get from https://platform.openai.com (GPT-5)
 GROQ_API_KEY=your_groq_api_key  # Get from https://console.groq.com (Fast inference - Kimi K2 recommended)
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url  # Optional - enables conversation persistence
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
 3. **Run**
@@ -35,6 +37,8 @@ npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000)  
+
+Conversation history is saved to the `conversation_states` table in Supabase when the optional keys are provided.
 
 ## License
 
